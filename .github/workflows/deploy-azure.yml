@@ -1,0 +1,47 @@
+name: Build and deploy a container to an Azure Web App
+
+on:
+  workflow_dispatch:
+    inputs:
+      repoName:
+        description: 'Repository to depoloy'
+        required: true
+      sufix:
+        description: 'Application sufix'
+        required: true
+      size:
+        description: 'Plan instance size'
+        required: true
+      dockerInstanceNo:
+        description: 'Number of container instances'
+        required: true
+      location:
+        description: 'Region location'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: mainCheckout
+        uses: actions/checkout@v2
+      
+      - name: targetCheckout
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.event.inputs.repoName }}
+          ref: refs/heads/master
+          path: target
+
+      - name: Install azcli
+        run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && brew update && brew install azure-cli
+
+      - name: Copy deployment Script
+        run: cp DeployShell.sh target/DeployShell.sh
+
+      - name: Run deployment
+        run: cd target && bash DeployShell.sh ${{ github.event.inputs.sufix }} ${{ github.event.inputs.size }} ${{ github.event.inputs.dockerInstanceNo }} ${{ github.event.inputs.location }}
+      
+      
