@@ -9,3 +9,4 @@ This script will pack and automatically deploy any docker project that exists in
 
 # Way #2
 Just run action and enjoy
+It will ask to login into Azure in the middle, so don't forget to review logs.
